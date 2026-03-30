@@ -95,10 +95,23 @@ venv\Scripts\activate
 #pip install fastapi uvicorn chromadb sentence-transformers requests beautifulsoup4 python-dotenv
 
 
-pip install fastapi uvicorn chromadb sentence-transformers requests beautifulsoup4 python-dotenv
+pip install fastapi uvicorn chromadb sentence-transformers requests beautifulsoup4 python-
+
+## Limitations
+- Answers depend on retrieved chunks
+- Some irrelevant content may be returned
+- Limited to ~30 crawled pages
+
+## Future Improvements
+- Better HTML cleaning
+- Better ranking
+- Larger LLM
 
 
 📌 Conclusion
 
 This project demonstrates a complete, production-style Retrieval-Augmented Generation pipeline, covering data ingestion, vector search, and API-based querying.
 It is suitable for use cases such as documentation assistants, support bots, and internal knowledge systems.
+
+
+Submission branch for RAG project.
