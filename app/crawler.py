@@ -1,40 +1,57 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
-import os
 
 visited = set()
-MAX_PAGES = 30   # 👈 HARD LIMIT
+MAX_PAGES = 30   # <-- hard limit
+
 
 def crawl(url, base_url, output_dir):
-    if url in visited or len(visited) >= MAX_PAGES:
+    global visited
+
+    if len(visited) >= MAX_PAGES:
         return
+
+    if url in visited:
+        return
+
+    if urlparse(url).netloc != urlparse(base_url).netloc:
+        return
+
+    # Only crawl tutorial/docs pages
+    if "/tutorial" not in url and url != base_url:
+        return
+
+    print("Crawling:", url)
 
     visited.add(url)
 
     try:
-        res = requests.get(url, timeout=10)
-        if res.status_code != 200:
-            return
+        response = requests.get(url, timeout=10)
+    except:
+        return
 
-        soup = BeautifulSoup(res.text, "html.parser")
+    if response.status_code != 200:
+        return
 
-        text = soup.get_text(separator=" ", strip=True)
-        filename = url.replace("https://", "").replace("/", "_") + ".txt"
+    os.makedirs(output_dir, exist_ok=True)
 
-        with open(os.path.join(output_dir, filename), "w", encoding="utf-8") as f:
-            f.write(text)
+    filename = f"page_{len(visited)}.html"
+    filepath = os.path.join(output_dir, filename)
 
-        for link in soup.find_all("a", href=True):
-            next_url = urljoin(base_url, link["href"])
-            if urlparse(next_url).netloc == urlparse(base_url).netloc:
-                crawl(next_url, base_url, output_dir)
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(response.text)
 
-    except Exception:
-        pass
+    soup = BeautifulSoup(response.text, "html.parser")
 
+    for link in soup.find_all("a", href=True):
+        next_url = urljoin(url, link["href"])
 
-if __name__ == "__main__":
-    os.makedirs("data/raw_pages", exist_ok=True)
-    start_url = "https://fastapi.tiangolo.com/"
-    crawl(start_url, start_url, "data/raw_pages")
+        if any(skip in next_url.lower() for skip in [
+            "#", "search", "login", "signup",
+            "twitter", "linkedin", "github"
+        ]):
+            continue
+
+        crawl(next_url, base_url, output_dir)

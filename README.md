@@ -95,7 +95,17 @@ venv\Scripts\activate
 #pip install fastapi uvicorn chromadb sentence-transformers requests beautifulsoup4 python-dotenv
 
 
-pip install fastapi uvicorn chromadb sentence-transformers requests beautifulsoup4 python-dotenv
+pip install fastapi uvicorn chromadb sentence-transformers requests beautifulsoup4 python-
+
+## Limitations
+- Answers depend on retrieved chunks
+- Some irrelevant content may be returned
+- Limited to ~30 crawled pages
+
+## Future Improvements
+- Better HTML cleaning
+- Better ranking
+- Larger LLM
 
 
 📌 Conclusion
